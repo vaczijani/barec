@@ -1,17 +1,25 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#define NORMAL 0
-#define STARTCOMMENT 1
-#define INCCOMMENT 2
-#define ENDCCOMMENT 3
-#define INSTRING 4
-#define ESCAPE 5
-#define INCPPCOMMENT 6
-#define INCLUDE 7
-#define SPACE 8
 
-int isword(int c) {
+typedef enum {
+NORMAL, 
+STARTCOMMENT, 
+INCCOMMENT, 
+ENDCCOMMENT, 
+INSTRING, 
+ESCAPE, 
+INCPPCOMMENT, 
+INCLUDE, 
+SPACE 
+} State;
+
+typedef enum {
+FALSE,
+TRUE
+} Bool;
+
+int iscname(int c) {
 	return isalnum(c) || c=='_';
 }
 
@@ -28,11 +36,12 @@ int main(int argc,char**args){
     int c; // next char from c source
     int prevc;  // previous char to detect token limits
     int ststr;  // string starting character, has to match with ending char
-    int oldst=NORMAL; // old state
-    int st=NORMAL; // state;position in c source
-	int keephash=0;
+    State oldst=NORMAL; // old state
+    State st=NORMAL; // state;position in c source
+	Bool keephash=FALSE;  // keeping preprocessor directives lets the code to compile
 	if (argc>1)
-		keephash=(strcmp(args[1],"keephash")==0);
+		keephash=(strcmp(args[1],"keephash")==0)?TRUE:FALSE;
+
     while((c=getchar())!=EOF){
         switch(st){
             case NORMAL:
@@ -73,12 +82,13 @@ int main(int argc,char**args){
                     default:  // process token limits
                         if (oldst!=SPACE){
 							// consider adding space because there was none
-                            if(isword(prevc)!=isword(c)){
+                            if(iscname(prevc)!=iscname(c)){
+                                // leave decimal point!
 								if(isdigit(prevc)&&c=='.'){} else
 								if(prevc=='.'&&isdigit(c)){} else
 								putchar(' ');
 							}
-                            if(!isword(prevc)&&!isword(c)){
+                            if(!iscname(prevc)&&!iscname(c)){
 								if (prevc!=c) {
 									// easier to define when not to add space
 									if(prevc=='-'&&c=='>'){} else
