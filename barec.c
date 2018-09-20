@@ -26,6 +26,12 @@ int iscname (int c)
 	return isalnum (c) || c == '_';
 }
 
+void begin_newline_with (int ch)
+{
+	putchar ('\n');
+	putchar (ch);
+}
+
 // Skips over:
 // - #include --> EOL
 // - // --> EOL
@@ -67,10 +73,7 @@ int main (int argc, char **args)
 
 			case '#':
 				if (keephash)
-				{
-					putchar ('\n');
-					putchar (c);
-				}
+					begin_newline_with (c);
 				st = INCLUDE;
 				break;
 
@@ -214,6 +217,7 @@ int main (int argc, char **args)
 				break;
 			}
 			break;
+
 		case INCCOMMENT:
 			switch (c)
 			{
@@ -222,6 +226,7 @@ int main (int argc, char **args)
 				break;
 			}
 			break;
+
 		case ENDCCOMMENT:
 			switch (c)
 			{
@@ -240,6 +245,7 @@ int main (int argc, char **args)
 				break;
 			}
 			break;
+
 		case INSTRING:
 			switch (c)
 			{
@@ -257,6 +263,7 @@ int main (int argc, char **args)
 				break;
 			}
 			break;
+
 		case ESCAPE:
 			st = oldst;
 			if (st == NORMAL || st == INSTRING || (st == INCLUDE && keephash))
@@ -265,6 +272,7 @@ int main (int argc, char **args)
 				putchar (c);
 			}
 			break;
+
 		case INCPPCOMMENT:
 			switch (c)
 			{
@@ -275,6 +283,7 @@ int main (int argc, char **args)
 				break;
 			}
 			break;
+
 		case INCLUDE:
 			switch (c)
 			{
