@@ -3,12 +3,11 @@ Turns C source to easy to process tokens.
 
 Reads correct C/C++ source from standard input and writes space delimited C tokens to the standard output.
 Turns:
-#include <stdio.h>
-int
-main()
-{
-  printf("Hello world\n");
-}
+#include <stdio.h>  
+int main()  
+{  
+  printf("Hello world\n");  
+}  
 
 to:
 int main ( ) { printf ( "Hello world\n" ) ; }
